@@ -271,6 +271,7 @@ void *main_loop(void *data)
         }
     }
 
+    // 初始化事件分派器
     if (event_init(&ctx->loop, 1024) == -1) {
         LOG(ERROR, "Fatal: fail to create event loop.");
         exit(EXIT_FAILURE);

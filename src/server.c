@@ -12,6 +12,7 @@
 #define SERVER_NULL -1
 #define SERVER_REGISTER_ERROR -2
 
+// 检查重试次数是否达到预定值
 #define CHECK_REDIRECTED(c, info_addr, msg)                               \
 do {                                                                      \
     if (c->redirected >= SERVER_RETRY_TIMES) {                            \
@@ -148,6 +149,7 @@ int server_retry(struct command *cmd)
     }
 }
 
+// 根据重定向地址对应的server，处理请求
 int server_redirect(struct command *cmd, struct redirect_info *info)
 {
     int port;

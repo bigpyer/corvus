@@ -26,6 +26,7 @@ int proxy_accept(struct connection *proxy)
     strcpy(client->info->addr.ip, ip);
     client->info->addr.port = port;
 
+    // 注册client EWRITABLE、E_READABLE事件到时间分派器
     if (conn_register(client) == CORVUS_ERR) {
         LOG(ERROR, "proxy_accept: fail to register client");
         conn_free(client);
@@ -33,14 +34,17 @@ int proxy_accept(struct connection *proxy)
         return CORVUS_ERR;
     }
 
+    // 注册client ev E_READABLE事件到事件分派器
     if (event_register(&client->ctx->loop, client->ev, E_READABLE) == CORVUS_ERR) {
         LOG(ERROR, "proxy_accept: fail to register client event");
         conn_free(client);
         conn_recycle(ctx, client);
         return CORVUS_ERR;
     }
+    // 新client连接接入ctx->conns(尾队列)
     TAILQ_INSERT_TAIL(&ctx->conns, client, next);
 
+    // 会话计数
     ATOMIC_INC(ctx->stats.connected_clients, 1);
     return CORVUS_OK;
 }
